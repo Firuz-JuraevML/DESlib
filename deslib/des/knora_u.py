@@ -133,10 +133,7 @@ class KNORAU(BaseDES):
             example.
 
         """
-        competences = np.sum(self.DSEL_processed_[neighbors, :], axis=1,
-                             dtype=np.float)
-
-        return competences
+        return np.sum(self.DSEL_processed_[neighbors, :], axis=1, dtype=np.float)
 
     def select(self, competences):
         """Select the base classifiers for the classification of the query

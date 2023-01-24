@@ -255,9 +255,7 @@ class METADES(BaseDES):
                     correct label for each sample in DSEL.
 
         """
-        pct_agree = np.sum(self.DSEL_processed_, axis=1) / self.n_classifiers_
-
-        return pct_agree
+        return np.sum(self.DSEL_processed_, axis=1) / self.n_classifiers_
 
     def compute_meta_features(self, scores, idx_neighbors, idx_neighbors_op):
         """Compute the five sets of meta-features used in the META-DES. Returns
@@ -292,7 +290,7 @@ class METADES(BaseDES):
         f1_all_classifiers = f1_all_classifiers.reshape(-1, self.k_)
 
         f2_all_classifiers =\
-            self.dsel_scores_[idx_neighbors, :,
+                self.dsel_scores_[idx_neighbors, :,
                               self.DSEL_target_[idx_neighbors]]
 
         f2_all_classifiers = f2_all_classifiers.swapaxes(1, 2)
@@ -307,11 +305,15 @@ class METADES(BaseDES):
         f4_all_classifiers = f4_all_classifiers.reshape(-1, self.Kp_)
 
         f5_all_classifiers = np.max(scores, axis=2).reshape(-1, 1)
-        meta_feature_vectors = np.hstack(
-            (f1_all_classifiers, f2_all_classifiers, f3_all_classifiers,
-             f4_all_classifiers, f5_all_classifiers))
-
-        return meta_feature_vectors
+        return np.hstack(
+            (
+                f1_all_classifiers,
+                f2_all_classifiers,
+                f3_all_classifiers,
+                f4_all_classifiers,
+                f5_all_classifiers,
+            )
+        )
 
     def _generate_meta_training_set(self):
         """Routine to generate the meta-training dataset that is further used
@@ -505,24 +507,23 @@ class METADES(BaseDES):
         """
         if not isinstance(self.Hc, (float, int)):
             raise ValueError(
-                'Parameter Hc should be either a number.'
-                ' Currently Hc = {}'.format(type(self.Hc)))
+                f'Parameter Hc should be either a number. Currently Hc = {type(self.Hc)}'
+            )
 
         if self.Hc < 0.5:
             raise ValueError(
-                'Parameter Hc should be higher than 0.5.'
-                ' Currently Hc = {}'.format(self.Hc))
+                f'Parameter Hc should be higher than 0.5. Currently Hc = {self.Hc}'
+            )
 
         if not isinstance(self.selection_threshold, float):
             raise ValueError(
-                'Parameter Hc should be either a float.'
-                ' Currently Hc = {}'.format(type(self.Hc)))
+                f'Parameter Hc should be either a float. Currently Hc = {type(self.Hc)}'
+            )
 
         if self.selection_threshold < 0.5:
             raise ValueError(
-                'Parameter selection_threshold should be higher than 0.5. '
-                'Currently selection_threshold = {}'.format(
-                    self.selection_threshold))
+                f'Parameter selection_threshold should be higher than 0.5. Currently selection_threshold = {self.selection_threshold}'
+            )
 
         if (self.meta_classifier is not None and
                 not hasattr(self.meta_classifier, "predict_proba")):
@@ -530,15 +531,13 @@ class METADES(BaseDES):
             raise ValueError(
                 "The meta-classifier should output probability estimates")
 
-        if self.Kp is not None:
-            if not isinstance(self.Kp, int):
-                raise TypeError("parameter Kp should be an integer.")
-            if self.Kp <= 1:
-                raise ValueError("parameter Kp must be higher than 1."
-                                 "input Kp is {} .".format(self.Kp))
-        else:
+        if self.Kp is None:
             raise ValueError("Parameter Kp is 'None'.")
 
+        if not isinstance(self.Kp, int):
+            raise TypeError("parameter Kp should be an integer.")
+        if self.Kp <= 1:
+            raise ValueError(f"parameter Kp must be higher than 1.input Kp is {self.Kp} .")
         super()._validate_parameters()
 
     def _check_Kp_samples(self):

@@ -41,10 +41,7 @@ def test_classify_instance_selection(create_pool_classifiers):
     selected_index = np.array([[True, True, False, False, False, True]])
     des_test.select = MagicMock(return_value=selected_index)
 
-    predictions = []
-    for clf in des_test.pool_classifiers:
-        predictions.append(clf.predict(query)[0])
-
+    predictions = [clf.predict(query)[0] for clf in des_test.pool_classifiers]
     predicted_label = des_test.classify_with_ds(query, np.array(predictions))
     assert predicted_label == 0.0
 
@@ -61,10 +58,7 @@ def test_classify_instance_selection_batch(create_pool_classifiers):
         [[True, True, False, False, False, True] * n_samples])
     des_test.select = MagicMock(return_value=selected_index)
 
-    predictions = []
-    for clf in des_test.pool_classifiers:
-        predictions.append(clf.predict(query)[0])
-
+    predictions = [clf.predict(query)[0] for clf in des_test.pool_classifiers]
     predicted_label = des_test.classify_with_ds(query, np.tile(predictions,
                                                                (n_samples, 1)))
     assert np.allclose(predicted_label, 0) and predicted_label.size == 3
@@ -85,9 +79,7 @@ def test_classify_instance_weighting(create_pool_classifiers):
     competences = np.array([[0.55, 1.0, 0.2, 0.60, 0.75, 0.3]])
     des_test.estimate_competence = MagicMock(return_value=competences)
 
-    predictions = []
-    for clf in des_test.pool_classifiers:
-        predictions.append(clf.predict(query)[0])
+    predictions = [clf.predict(query)[0] for clf in des_test.pool_classifiers]
     predicted_label = des_test.classify_with_ds(query, np.array(predictions))
     assert predicted_label == 1.0
 
@@ -103,9 +95,7 @@ def test_classify_instance_weighting_batch(create_pool_classifiers):
     competences = np.tile([0.55, 1.0, 0.2, 0.60, 0.75, 0.3], (3, 1))
     des_test.estimate_competence = MagicMock(return_value=competences)
 
-    predictions = []
-    for clf in des_test.pool_classifiers:
-        predictions.append(clf.predict(query)[0])
+    predictions = [clf.predict(query)[0] for clf in des_test.pool_classifiers]
     predicted_label = des_test.classify_with_ds(query,
                                                 np.tile(predictions, (3, 1)))
     assert np.allclose(predicted_label, 1) and predicted_label.size == 3
@@ -127,10 +117,7 @@ def test_classify_instance_hybrid(create_pool_classifiers):
     des_test.estimate_competence = MagicMock(return_value=competences)
     des_test.select = MagicMock(return_value=selected_indices)
 
-    predictions = []
-    for clf in des_test.pool_classifiers:
-        predictions.append(clf.predict(query)[0])
-
+    predictions = [clf.predict(query)[0] for clf in des_test.pool_classifiers]
     predicted_label = des_test.classify_with_ds(query, np.array(predictions))
     assert expected == predicted_label
 
@@ -151,10 +138,7 @@ def test_classify_instance_hybrid_batch(create_pool_classifiers):
     des_test.estimate_competence = MagicMock(return_value=competences)
     des_test.select = MagicMock(return_value=selected_indices)
 
-    predictions = []
-    for clf in des_test.pool_classifiers:
-        predictions.append(clf.predict(query)[0])
-
+    predictions = [clf.predict(query)[0] for clf in des_test.pool_classifiers]
     predicted_label = des_test.classify_with_ds(query,
                                                 np.tile(predictions, (3, 1)))
     assert np.allclose(predicted_label, expected)

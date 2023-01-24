@@ -32,6 +32,7 @@ when Dynamic Selection obtains higher classification performance?."
 arXiv preprint arXiv:1804.07882 (2018).
 """
 
+
 ###############################################################################
 # Let's start by importing all required modules. In this example we use the
 # new sklearn-OpenML interface to fetch the diabetes classification problem.
@@ -90,7 +91,7 @@ names = ['MCB', 'OLA', 'Mod. Rank', 'DES-P', 'KNORA-E', 'KNORA-U']
 fig, ax = plt.subplots()
 for ds_method, name in zip(list_ds_methods, names):
     accuracy = []
-    for idx_ih, ih_rate in enumerate([0.0, 0.14, 0.28, 0.42]):
+    for ih_rate in [0.0, 0.14, 0.28, 0.42]:
         ds_method.IH_rate = ih_rate
         accuracy.append(ds_method.score(X_test, y_test))
     ax.plot(list_ih_values, accuracy, label=name)

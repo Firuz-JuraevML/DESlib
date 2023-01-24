@@ -242,10 +242,9 @@ class KNOP(BaseDES):
             example.
         """
         _, idx_neighbors = self._get_similar_out_profiles(probabilities)
-        competences = np.sum(self.DSEL_processed_[idx_neighbors, :], axis=1,
-                             dtype=np.float)
-
-        return competences
+        return np.sum(
+            self.DSEL_processed_[idx_neighbors, :], axis=1, dtype=np.float
+        )
 
     def select(self, competences):
         """Select the base classifiers for the classification of the query

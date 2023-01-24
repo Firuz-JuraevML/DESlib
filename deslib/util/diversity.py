@@ -84,9 +84,9 @@ def _process_predictions(y, y_pred1, y_pred2):
     for index in range(size_y):
         if y_pred1[index] == y[index] and y_pred2[index] == y[index]:
             N11 += 1.0
-        elif y_pred1[index] == y[index] and y_pred2[index] != y[index]:
+        elif y_pred1[index] == y[index]:
             N10 += 1.0
-        elif y_pred1[index] != y[index] and y_pred2[index] == y[index]:
+        elif y_pred2[index] == y[index]:
             N01 += 1.0
         else:
             N00 += 1.0
@@ -122,8 +122,7 @@ def double_fault(y, y_pred1, y_pred2):
     Image and Vision Computing 19.9 (2001): 699-707.
     """
     N00, _, _, _ = _process_predictions(y, y_pred1, y_pred2)
-    df = N00
-    return df
+    return N00
 
 
 def negative_double_fault(y, y_pred1, y_pred2):
@@ -176,8 +175,7 @@ def Q_statistic(y, y_pred1, y_pred2):
     Q : The q-statistic measure between two classifiers
     """
     N00, N10, N01, N11 = _process_predictions(y, y_pred1, y_pred2)
-    Q = ((N11 * N00) - (N01 * N10)) / ((N11 * N00) + (N01 * N10))
-    return Q
+    return ((N11 * N00) - (N01 * N10)) / ((N11 * N00) + (N01 * N10))
 
 
 def ratio_errors(y, y_pred1, y_pred2):
@@ -207,11 +205,7 @@ def ratio_errors(y, y_pred1, y_pred2):
     Multiple Classifier Systems (2003): 159-159.
     """
     N00, N10, N01, N11 = _process_predictions(y, y_pred1, y_pred2)
-    if N00 == 0:
-        ratio = sys.float_info.max
-    else:
-        ratio = (N01 + N10) / N00
-    return ratio
+    return sys.float_info.max if N00 == 0 else (N01 + N10) / N00
 
 
 def disagreement_measure(y, y_pred1, y_pred2):
@@ -235,8 +229,7 @@ def disagreement_measure(y, y_pred1, y_pred2):
     disagreement : The frequency at which both classifiers disagrees
     """
     _, N10, N01, _ = _process_predictions(y, y_pred1, y_pred2)
-    disagreement = N10 + N01
-    return disagreement
+    return N10 + N01
 
 
 def agreement_measure(y, y_pred1, y_pred2):
@@ -260,8 +253,7 @@ def agreement_measure(y, y_pred1, y_pred2):
     agreement : The frequency at which both classifiers agrees
     """
     N00, _, _, N11 = _process_predictions(y, y_pred1, y_pred2)
-    agreement = N00 + N11
-    return agreement
+    return N00 + N11
 
 
 def correlation_coefficient(y, y_pred1, y_pred2):
@@ -285,8 +277,7 @@ def correlation_coefficient(y, y_pred1, y_pred2):
     """
     N00, N10, N01, N11 = _process_predictions(y, y_pred1, y_pred2)
     tmp = (N11 * N00) - (N10 * N01)
-    rho = tmp / np.sqrt((N11 + N01) * (N10 + N00) * (N11 + N10) * (N01 + N00))
-    return rho
+    return tmp / np.sqrt((N11 + N01) * (N10 + N00) * (N11 + N10) * (N01 + N00))
 
 
 def compute_pairwise_diversity(targets, prediction_matrix, diversity_func):

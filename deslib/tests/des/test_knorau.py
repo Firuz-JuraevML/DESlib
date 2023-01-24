@@ -13,7 +13,7 @@ def test_check_estimator():
 def test_estimate_competence_batch(example_estimate_competence,
                                    create_pool_classifiers):
 
-    X, y, neighbors = example_estimate_competence[0:3]
+    X, y, neighbors = example_estimate_competence[:3]
 
     query = np.ones((3, 2))
     expected = np.array([[4.0, 3.0, 4.0],

@@ -150,9 +150,7 @@ def test_classify_instance(create_pool_classifiers):
     dcs_test.estimate_competence = MagicMock(return_value=competences)
     expected = pool_classifiers[np.argmax(competences)].predict(query)[0]
 
-    predictions = []
-    for clf in dcs_test.pool_classifiers:
-        predictions.append(clf.predict(query)[0])
+    predictions = [clf.predict(query)[0] for clf in dcs_test.pool_classifiers]
     predicted_label = dcs_test.classify_with_ds(query, np.array(predictions))
     assert predicted_label == expected
 
@@ -167,14 +165,11 @@ def test_classify_instance_batch(create_pool_classifiers):
     competences = np.random.rand(n_samples, n_classifiers)
 
     dcs_test.estimate_competence = MagicMock(return_value=competences)
-    expected = []
-    for ind in range(n_samples):
-        expected.append(
-            pool_classifiers[np.argmax(competences[ind, :])].predict(query)[0])
-
-    predictions = []
-    for clf in dcs_test.pool_classifiers:
-        predictions.append(clf.predict(query)[0])
+    expected = [
+        pool_classifiers[np.argmax(competences[ind, :])].predict(query)[0]
+        for ind in range(n_samples)
+    ]
+    predictions = [clf.predict(query)[0] for clf in dcs_test.pool_classifiers]
     predicted_label = dcs_test.classify_with_ds(query,
                                                 np.tile(predictions, (3, 1)))
     assert np.array_equal(predicted_label, expected)
@@ -189,9 +184,7 @@ def test_classify_instance_all(competences, expected, create_pool_classifiers):
     dcs_test.estimate_competence = MagicMock(
         return_value=np.array(competences))
 
-    predictions = []
-    for clf in dcs_test.pool_classifiers:
-        predictions.append(clf.predict(query)[0])
+    predictions = [clf.predict(query)[0] for clf in dcs_test.pool_classifiers]
     predicted_label = dcs_test.classify_with_ds(query, np.array(predictions))
     assert predicted_label == expected
 
@@ -206,9 +199,7 @@ def test_classify_instance_all_batch(create_pool_classifiers):
     dcs_test.estimate_competence = MagicMock(
         return_value=np.array(competences))
 
-    predictions = []
-    for clf in dcs_test.pool_classifiers:
-        predictions.append(clf.predict(query)[0])
+    predictions = [clf.predict(query)[0] for clf in dcs_test.pool_classifiers]
     predicted_label = dcs_test.classify_with_ds(query, np.tile(predictions,
                                                                (n_samples, 1)))
     assert np.array_equal(predicted_label, expected)

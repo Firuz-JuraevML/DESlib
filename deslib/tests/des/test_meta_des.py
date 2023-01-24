@@ -137,10 +137,9 @@ def test_estimate_competence(example_estimate_competence,
     meta_test.meta_classifier_.predict_proba = MagicMock(
         return_value=np.array([[0.2, 0.8], [1.0, 0.0], [0.2, 0.8]]))
 
-    probabilities = []
-    for clf in meta_test.pool_classifiers:
-        probabilities.append(clf.predict_proba(query))
-
+    probabilities = [
+        clf.predict_proba(query) for clf in meta_test.pool_classifiers
+    ]
     probabilities = np.array(probabilities).transpose((1, 0, 2))
 
     expected = np.array([[0.8, 0.0, 0.8]])
@@ -174,10 +173,9 @@ def test_estimate_competence_batch(example_estimate_competence,
     meta_test.meta_classifier_.predict_proba = MagicMock(
         return_value=np.tile([0.0, 0.8], (9, 1)))
 
-    probabilities = []
-    for clf in meta_test.pool_classifiers:
-        probabilities.append(clf.predict_proba(query))
-
+    probabilities = [
+        clf.predict_proba(query) for clf in meta_test.pool_classifiers
+    ]
     probabilities = np.array(probabilities).transpose((1, 0, 2))
 
     expected = np.ones((3, 3)) * 0.8

@@ -192,8 +192,4 @@ class MLA(BaseDCS):
         competences_masked = np.ma.sum(masked_preprocessed,
                                        axis=1) / np.ma.sum(masked_dist, axis=1)
 
-        # Fill 0 to the masked values in the resulting array (when no neighbors
-        # belongs to the class predicted by the corresponding base classifier)
-        competences = np.ma.filled(competences_masked, 0)
-
-        return competences
+        return np.ma.filled(competences_masked, 0)

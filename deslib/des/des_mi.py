@@ -155,11 +155,7 @@ class DESMI(BaseDS):
 
         # Apply the weights to each sample for each base classifier
         competence = correct_num * weight[:, :, np.newaxis]
-        # calculate the classifiers mean competence for all
-        # samples/base classifier
-        competence = np.sum(competence, axis=1)
-
-        return competence
+        return np.sum(competence, axis=1)
 
     def select(self, competences):
         """Select an ensemble containing the N most accurate classifiers for
@@ -232,10 +228,8 @@ class DESMI(BaseDS):
 
         if query.shape[0] != predictions.shape[0]:
             raise ValueError(
-                'The arrays query and predictions must have the same number'
-                ' of samples. query.shape is {}'
-                'and predictions.shape is {}'.format(query.shape,
-                                                     predictions.shape))
+                f'The arrays query and predictions must have the same number of samples. query.shape is {query.shape}and predictions.shape is {predictions.shape}'
+            )
 
         accuracy = self.estimate_competence(query,
                                             neighbors=neighbors,
@@ -247,9 +241,7 @@ class DESMI(BaseDS):
         selected_classifiers = self.select(accuracy)
         votes = predictions[
             np.arange(predictions.shape[0])[:, None], selected_classifiers]
-        predicted_label = majority_voting_rule(votes)
-
-        return predicted_label
+        return majority_voting_rule(votes)
 
     def predict_proba_with_ds(self, query, predictions, probabilities,
                               neighbors=None, distances=None, DFP_mask=None):
@@ -285,10 +277,8 @@ class DESMI(BaseDS):
         """
         if query.shape[0] != probabilities.shape[0]:
             raise ValueError(
-                'The arrays query and predictions must have the same number'
-                ' of samples. query.shape is {}'
-                'and predictions.shape is {}'.format(query.shape,
-                                                     predictions.shape))
+                f'The arrays query and predictions must have the same number of samples. query.shape is {query.shape}and predictions.shape is {predictions.shape}'
+            )
 
         accuracy = self.estimate_competence(query,
                                             neighbors=neighbors,
@@ -302,9 +292,7 @@ class DESMI(BaseDS):
                          np.arange(probabilities.shape[0])[:, None],
                          selected_classifiers, :]
 
-        predicted_proba = np.mean(ensemble_proba, axis=1)
-
-        return predicted_proba
+        return np.mean(ensemble_proba, axis=1)
 
     def _validate_parameters(self):
         """Check if the parameters passed as argument are correct.
@@ -319,20 +307,19 @@ class DESMI(BaseDS):
         self.N_ = int(self.n_classifiers_ * self.pct_accuracy)
 
         if self.N_ <= 0:
-            raise ValueError("The value of N_ should be higher than 0"
-                             "N_ = {}".format(self.N_))
+            raise ValueError(f"The value of N_ should be higher than 0N_ = {self.N_}")
 
         # The value of Scaling coefficient (alpha) should be positive
         # to add more weight to the minority class
         if self.alpha <= 0:
-            raise ValueError("The value of alpha should be higher than 0"
-                             "alpha = {}".format(self.alpha))
+            raise ValueError(
+                f"The value of alpha should be higher than 0alpha = {self.alpha}"
+            )
 
         if not isinstance(self.alpha, np.float):
             raise TypeError("parameter alpha should be a float!")
 
         if self.pct_accuracy <= 0. or self.pct_accuracy > 1:
             raise ValueError(
-                "The value of pct_accuracy should be higher than 0 and lower"
-                " or equal to 1, "
-                "pct_accuracy = {}".format(self.pct_accuracy))
+                f"The value of pct_accuracy should be higher than 0 and lower or equal to 1, pct_accuracy = {self.pct_accuracy}"
+            )

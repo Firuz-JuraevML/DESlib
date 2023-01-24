@@ -266,11 +266,9 @@ class DESKNN(BaseDS):
             diversity_indices = np.argsort(diversity_of_selected, axis=1)
             diversity_indices = diversity_indices[:, 0:self.J_]
 
-        # Getting the index of all selected base classifiers.
-        selected_classifiers = competent_indices[
-            np.arange(competent_indices.shape[0])[:, None], diversity_indices]
-
-        return selected_classifiers
+        return competent_indices[
+            np.arange(competent_indices.shape[0])[:, None], diversity_indices
+        ]
 
     def classify_with_ds(self, query, predictions, probabilities=None,
                          neighbors=None, distances=None, DFP_mask=None):
@@ -320,10 +318,8 @@ class DESKNN(BaseDS):
 
         if query.shape[0] != predictions.shape[0]:
             raise ValueError(
-                'The arrays query and predictions must have the same number'
-                ' of samples. query.shape is {}'
-                'and predictions.shape is {}'.format(query.shape,
-                                                     predictions.shape))
+                f'The arrays query and predictions must have the same number of samples. query.shape is {query.shape}and predictions.shape is {predictions.shape}'
+            )
 
         accuracy, diversity = self.estimate_competence(query,
                                                        neighbors,
@@ -336,9 +332,7 @@ class DESKNN(BaseDS):
         selected_classifiers = self.select(accuracy, diversity)
         votes = predictions[
             np.arange(predictions.shape[0])[:, None], selected_classifiers]
-        predicted_label = majority_voting_rule(votes)
-
-        return predicted_label
+        return majority_voting_rule(votes)
 
     def predict_proba_with_ds(self, query, predictions, probabilities,
                               neighbors=None, distances=None, DFP_mask=None):
@@ -381,10 +375,8 @@ class DESKNN(BaseDS):
 
         if query.shape[0] != probabilities.shape[0]:
             raise ValueError(
-                'The arrays query and predictions must have the same number'
-                ' of samples. query.shape is {}'
-                'and predictions.shape is {}'.format(query.shape,
-                                                     predictions.shape))
+                f'The arrays query and predictions must have the same number of samples. query.shape is {query.shape}and predictions.shape is {predictions.shape}'
+            )
 
         accuracy, diversity = self.estimate_competence(query,
                                                        neighbors,
@@ -399,9 +391,7 @@ class DESKNN(BaseDS):
                          np.arange(probabilities.shape[0])[:, None],
                          selected_classifiers, :]
 
-        predicted_proba = np.mean(ensemble_proba, axis=1)
-
-        return predicted_proba
+        return np.mean(ensemble_proba, axis=1)
 
     def _check_parameters(self):
         """Check if the parameters passed as argument are correct.
@@ -418,12 +408,13 @@ class DESKNN(BaseDS):
                 ' "DF", "Q" or "Ratio"')
 
         if self.N_ <= 0 or self.J_ <= 0:
-            raise ValueError("The values of N_ and J_ should be higher than 0"
-                             "N_ = {}, J_= {} ".format(self.N_, self.J_))
+            raise ValueError(
+                f"The values of N_ and J_ should be higher than 0N_ = {self.N_}, J_= {self.J_} "
+            )
         if self.N_ < self.J_:
             raise ValueError(
-                "The value of N_ should be greater or equals than J_"
-                "N_ = {}, J_= {} ".format(self.N_, self.J_))
+                f"The value of N_ should be greater or equals than J_N_ = {self.N_}, J_= {self.J_} "
+            )
 
     def _set_diversity_func(self):
         """Set the diversity function to be used according to the

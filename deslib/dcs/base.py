@@ -131,7 +131,7 @@ class BaseDCS(BaseDS):
                 indices = [idx for idx, _ in enumerate(diff_list) if
                            diff_list[idx] < self.diff_thresh]
 
-                if len(indices) == 0:
+                if not indices:
                     indices = range(self.n_classifiers_)
 
                 selected_classifiers[row] = rng.choice(indices)
@@ -204,10 +204,8 @@ class BaseDCS(BaseDS):
 
         if query.shape[0] != predictions.shape[0]:
             raise ValueError(
-                'The arrays query and predictions must have the same shape. '
-                'query.shape is {}'
-                'and predictions.shape is {}'.format(query.shape,
-                                                     predictions.shape))
+                f'The arrays query and predictions must have the same shape. query.shape is {query.shape}and predictions.shape is {predictions.shape}'
+            )
 
         competences = self.estimate_competence(query, neighbors,
                                                distances=distances,
@@ -219,16 +217,13 @@ class BaseDCS(BaseDS):
         if self.selection_method != 'all':
             # only one classifier is selected
             clf_index = self.select(competences)
-            predicted_label = predictions[
-                np.arange(predictions.shape[0]), clf_index]
+            return predictions[np.arange(predictions.shape[0]), clf_index]
         else:
             # Selected ensemble of classifiers is combined using Majority
             # Voting
             indices = self.select(competences)
             votes = np.ma.MaskedArray(predictions, ~indices)
-            predicted_label = majority_voting_rule(votes)
-
-        return predicted_label
+            return majority_voting_rule(votes)
 
     def predict_proba_with_ds(self, query, predictions, probabilities,
                               neighbors=None, distances=None, DFP_mask=None):
@@ -268,10 +263,8 @@ class BaseDCS(BaseDS):
         """
         if query.shape[0] != probabilities.shape[0]:
             raise ValueError(
-                'The arrays query and predictions must have the same number '
-                'of samples. query.shape is {}'
-                'and predictions.shape is {}'.format(query.shape,
-                                                     predictions.shape))
+                f'The arrays query and predictions must have the same number of samples. query.shape is {query.shape}and predictions.shape is {predictions.shape}'
+            )
 
         competences = self.estimate_competence(query, neighbors,
                                                distances=distances,
@@ -283,8 +276,7 @@ class BaseDCS(BaseDS):
         if self.selection_method != 'all':
             # only one classifier is selected
             clf_index = self.select(competences)
-            predicted_proba = probabilities[
-                np.arange(probabilities.shape[0]), clf_index]
+            return probabilities[np.arange(probabilities.shape[0]), clf_index]
         else:
             # Selected ensemble of classifiers is combined using average
             # probability
@@ -298,9 +290,7 @@ class BaseDCS(BaseDS):
             masked_proba = np.ma.MaskedArray(probabilities,
                                              ~selected_classifiers)
 
-            predicted_proba = np.mean(masked_proba, axis=1)
-
-        return predicted_proba
+            return np.mean(masked_proba, axis=1)
 
     def _validate_parameters(self):
 

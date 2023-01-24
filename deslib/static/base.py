@@ -94,11 +94,9 @@ class BaseStaticEnsemble(BaseEstimator, ClassifierMixin):
         # Check if base classifiers are not using LabelEncoder (the case for
         # scikit-learn's ensembles):
         if isinstance(self.pool_classifiers_, BaseEnsemble):
-            if np.array_equal(self.pool_classifiers_.classes_,
-                              self.pool_classifiers_[0].classes_):
-                self.base_already_encoded_ = False
-            else:
-                self.base_already_encoded_ = True
+            self.base_already_encoded_ = not np.array_equal(
+                self.pool_classifiers_.classes_, self.pool_classifiers_[0].classes_
+            )
         else:
             self.base_already_encoded_ = False
 
@@ -113,7 +111,4 @@ class BaseStaticEnsemble(BaseEstimator, ClassifierMixin):
         return y_ind
 
     def _encode_base_labels(self, y):
-        if self.base_already_encoded_:
-            return y
-        else:
-            return self.enc_.transform(y)
+        return y if self.base_already_encoded_ else self.enc_.transform(y)

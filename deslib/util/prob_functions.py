@@ -92,12 +92,9 @@ def log_func(n_classes, support_correct):
     support_correct[support_correct < 0] = 0
 
     if n_classes == 2:
-        C_src = (2 * support_correct) - 1
-    else:
-        temp = np.log(2) / np.log(n_classes)
-        C_src = (2 * (support_correct ** temp)) - 1
-
-    return C_src
+        return (2 * support_correct) - 1
+    temp = np.log(2) / np.log(n_classes)
+    return (2 * (support_correct ** temp)) - 1
 
 
 def entropy_func(n_classes, supports, is_correct):
@@ -131,9 +128,9 @@ def entropy_func(n_classes, supports, is_correct):
     """
     n_samples = is_correct.shape[0]
     if n_samples != supports.shape[0]:
-        raise ValueError("The number of samples in X and y must be the same"
-                         "n_samples X = {}, n_samples y = {} ".format(
-                           n_samples, supports.shape[0]))
+        raise ValueError(
+            f"The number of samples in X and y must be the samen_samples X = {n_samples}, n_samples y = {supports.shape[0]} "
+        )
 
     supports[supports > 1.0] = 1.0
     supports[supports < 0.0] = 0.0
@@ -215,7 +212,7 @@ def ccprmod(supports, idx_correct_label, B=20):
     for n in range(N):
         t = range((idx_correct_label[n]) * B, (idx_correct_label[n] + 1) * B)
         bc = betaincj[n, t]
-        bi = betaincj[n, list(set(range(0, (C * B))) - set(t))]
+        bi = betaincj[n, list(set(range(C * B)) - set(t))]
         bi = npm.transpose(npm.reshape(bi, (B, C - 1), order='F'))
         C_src[n] = np.sum(np.multiply((bc[0, 1:] - bc[0, 0:-1]),
                                       np.prod((bi[:, 0:-1] + bi[:, 1:]) / 2,
@@ -263,8 +260,7 @@ def min_difference(supports, idx_correct_label):
 
     difference = supports_correct.reshape(-1, 1) - supports_others.reshape(
         supports_correct.size, -1)
-    C_src = np.sort(difference, axis=1)[:, 0]
-    return C_src
+    return np.sort(difference, axis=1)[:, 0]
 
 
 def softmax(w, theta=1.0):
@@ -288,5 +284,4 @@ def softmax(w, theta=1.0):
     """
     w = np.atleast_2d(w)
     e = np.exp(np.array(w) / theta)
-    dist = e / np.sum(e, axis=1).reshape(-1, 1)
-    return dist
+    return e / np.sum(e, axis=1).reshape(-1, 1)

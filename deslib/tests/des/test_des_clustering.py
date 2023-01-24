@@ -33,7 +33,7 @@ def test_fit_homogeneous_clusters(create_pool_classifiers,
                                     clustering=KMeans(n_clusters=2),
                                     pct_accuracy=0.5, pct_diversity=0.33)
 
-    X, y = example_estimate_competence[0:2]
+    X, y = example_estimate_competence[:2]
     clustering_test.clustering.predict = MagicMock(return_value=y)
 
     clustering_test.fit(X, y)
@@ -52,7 +52,7 @@ def test_fit_heterogeneous_clusters(example_estimate_competence,
                                     clustering=KMeans(n_clusters=2),
                                     pct_accuracy=0.5,
                                     pct_diversity=0.33)
-    X, y = example_estimate_competence[0:2]
+    X, y = example_estimate_competence[:2]
 
     clustering_test.clustering.predict = MagicMock(
         return_value=return_cluster_index_ex2)
@@ -63,10 +63,8 @@ def test_fit_heterogeneous_clusters(example_estimate_competence,
                       atol=0.01).all()
     assert np.isclose(clustering_test.performance_cluster_[:, 0], [0.572, 0.625],
                       atol=0.01).all()
-    assert clustering_test.indices_[0, 0] == 0 or clustering_test.indices_[
-        0, 0] == 2
-    assert clustering_test.indices_[1, 0] == 0 or clustering_test.indices_[
-        1, 0] == 2
+    assert clustering_test.indices_[0, 0] in [0, 2]
+    assert clustering_test.indices_[1, 0] in [0, 2]
 
 
 def test_estimate_competence(create_pool_classifiers,
@@ -76,7 +74,7 @@ def test_estimate_competence(create_pool_classifiers,
                                     clustering=KMeans(n_clusters=2),
                                     pct_accuracy=0.5, pct_diversity=0.33)
 
-    X, y = example_estimate_competence[0:2]
+    X, y = example_estimate_competence[:2]
 
     # Keep the original predict method to change after
     clustering_test.clustering.predict = MagicMock(
@@ -99,7 +97,7 @@ def test_fit_clusters_less_diverse(example_estimate_competence,
                                     clustering=KMeans(n_clusters=2),
                                     pct_accuracy=0.5, pct_diversity=0.33,
                                     more_diverse=False)
-    X, y = example_estimate_competence[0:2]
+    X, y = example_estimate_competence[:2]
 
     clustering_test.clustering.predict = MagicMock(return_value=y)
     clustering_test.fit(X, y)
@@ -133,10 +131,9 @@ def test_classify_instance(create_pool_classifiers):
                                     clustering=KMeans(n_clusters=2))
 
     clustering_test.select = MagicMock(return_value=[0, 1, 2, 3, 5, 6, 7, 9])
-    predictions = []
-    for clf in clustering_test.pool_classifiers:
-        predictions.append(clf.predict(query)[0])
-
+    predictions = [
+        clf.predict(query)[0] for clf in clustering_test.pool_classifiers
+    ]
     predicted = clustering_test.classify_with_ds(query, np.array(predictions))
     assert predicted == 0
 
@@ -203,7 +200,7 @@ def test_diversity_metric_ratio(create_X_y):
 # an error since this class does not require base classifiers that
 # can estimate probabilities
 def test_predict_proba(example_estimate_competence):
-    X, y = example_estimate_competence[0:2]
+    X, y = example_estimate_competence[:2]
 
     clf1 = Perceptron()
     clf1.fit(X, y)

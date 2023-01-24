@@ -287,15 +287,13 @@ def create_pool_classifiers_dog_cat_plane():
     clf_2 = create_base_classifier(return_value=np.array(['plane']),
                                    return_prob=np.atleast_2d([0.33, 0.67]))
 
-    pool_classifiers = [clf_0, clf_1, clf_2]
-    return pool_classifiers
+    return [clf_0, clf_1, clf_2]
 
 
 def create_pool_classifiers_dog():
     clf_0 = create_base_classifier(return_value=np.array(['dog']),
                                    return_prob=np.atleast_2d([0.5, 0.5]))
-    pool_classifiers = [clf_0, clf_0, clf_0]
-    return pool_classifiers
+    return [clf_0, clf_0, clf_0]
 
 
 def test_label_encoder_only_dsel_allagree():
