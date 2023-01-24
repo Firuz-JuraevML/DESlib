@@ -93,8 +93,7 @@ class FaissKNNClassifier:
         counts = np.apply_along_axis(
             lambda x: np.bincount(x, minlength=self.n_classes_), axis=1,
             arr=class_idx.astype(np.int16))
-        preds = np.argmax(counts, axis=1)
-        return preds
+        return np.argmax(counts, axis=1)
 
     def kneighbors(self, X, n_neighbors=None, return_distance=True):
         """Finds the K-neighbors of a point.
@@ -126,22 +125,18 @@ class FaissKNNClassifier:
             n_neighbors = self.n_neighbors
 
         elif n_neighbors <= 0:
-            raise ValueError("Expected n_neighbors > 0."
-                             " Got {}" .format(n_neighbors))
+            raise ValueError(f"Expected n_neighbors > 0. Got {n_neighbors}")
         else:
             if not np.issubdtype(type(n_neighbors), np.integer):
                 raise TypeError(
-                    "n_neighbors does not take {} value, "
-                    "enter integer value" .format(type(n_neighbors)))
+                    f"n_neighbors does not take {type(n_neighbors)} value, enter integer value"
+                )
 
         check_is_fitted(self, 'index_')
 
         X = np.atleast_2d(X).astype(np.float32)
         dist, idx = self.index_.search(X, n_neighbors)
-        if return_distance:
-            return dist, idx
-        else:
-            return idx
+        return (dist, idx) if return_distance else idx
 
     def predict_proba(self, X):
         """Estimates the posterior probabilities for sample in X.
@@ -162,9 +157,7 @@ class FaissKNNClassifier:
             lambda x: np.bincount(x, minlength=self.n_classes_), axis=1,
             arr=class_idx.astype(np.int16))
 
-        preds_proba = counts / self.n_neighbors
-
-        return preds_proba
+        return counts / self.n_neighbors
 
     def fit(self, X, y):
         """Fit the model according to the given training data.
@@ -198,6 +191,6 @@ class FaissKNNClassifier:
             self.index_ = self.faiss.IndexHNSWFlat(d, 32)
             self.index_.hnsw.efConstruction = 40
         else:
-            raise ValueError("Invalid algorithm option."
-                             " Expected ['brute', 'voronoi', 'hierarchical'], "
-                             "got {}" .format(self.algorithm))
+            raise ValueError(
+                f"Invalid algorithm option. Expected ['brute', 'voronoi', 'hierarchical'], got {self.algorithm}"
+            )

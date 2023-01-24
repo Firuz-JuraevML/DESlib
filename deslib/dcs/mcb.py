@@ -204,9 +204,7 @@ class MCB(BaseDCS):
         # Use the masked array mean to take into account the removed neighbors
         processed_pred = np.ma.MaskedArray(self.DSEL_processed_[neighbors, :],
                                            mask=~boolean_mask)
-        competences = np.ma.mean(processed_pred, axis=1)
-
-        return competences
+        return np.ma.mean(processed_pred, axis=1)
 
     def _validate_parameters(self):
 

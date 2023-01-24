@@ -193,8 +193,7 @@ def make_banana(size_classes, na=0.1, random_state=None):
     """
     rng = check_random_state(random_state)
     if not isinstance(na, float) or na > 1.:
-        raise ValueError(
-            'Parameter na must be a float lower than 1. na = {}'.format(na))
+        raise ValueError(f'Parameter na must be a float lower than 1. na = {na}')
 
     t1 = np.transpose(-np.linspace(-np.pi / 4, np.pi, size_classes[0]))
     z1 = np.transpose((np.sin(t1), np.cos(t1)))

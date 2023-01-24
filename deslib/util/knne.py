@@ -145,10 +145,7 @@ class KNNE(BaseEstimator):
             dists = np.hstack((dists, mod_dists[:, 0:mod]))
             inds = np.hstack((inds, mod_inds[:, 0:mod]))
 
-        if return_distance:
-            return dists, inds
-        else:
-            return inds
+        return (dists, inds) if return_distance else inds
 
     def predict(self, X):
         """Predict the class label for each sample in X.
@@ -191,8 +188,7 @@ class KNNE(BaseEstimator):
         for c in self.classes_:
             dists_array[:, c] = np.ma.MaskedArray(dists, classes != c).mean(
                 axis=1)
-        probas = softmax(1. / dists_array)
-        return probas
+        return softmax(1. / dists_array)
 
     def _set_knn_type(self):
 
@@ -227,23 +223,22 @@ class KNNE(BaseEstimator):
             raise ValueError('"n_neighbors" is required for the KNN-E model.')
 
         if n_neighbors < self.n_classes_:
-            raise ValueError('"n_neighbors" must be equals or higher than '
-                             'the number of classes. Got {}.'
-                             .format(n_neighbors))
+            raise ValueError(
+                f'"n_neighbors" must be equals or higher than the number of classes. Got {n_neighbors}.'
+            )
 
         if not np.issubdtype(type(n_neighbors), np.integer):
             raise TypeError(
-                "n_neighbors does not take {} value, "
-                "enter integer value".format(type(n_neighbors)))
+                f"n_neighbors does not take {type(n_neighbors)} value, enter integer value"
+            )
 
     def _handle_n_neighbors(self, n_neighbors):
         mdc = int(n_neighbors / self.n_classes_)
         mod = n_neighbors % self.n_classes_
         if mod > 0:
-            warnings.warn('"n_neighbors" is not a multiple of "n_classes". Got'
-                          '{} and {}.One or more classes will have one less'
-                          ' instance.'.format(n_neighbors,
-                                              self.n_classes_))
+            warnings.warn(
+                f'"n_neighbors" is not a multiple of "n_classes". Got{n_neighbors} and {self.n_classes_}.One or more classes will have one less instance.'
+            )
             n_per_class = mdc + 1
         else:
             n_per_class = mdc

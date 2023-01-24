@@ -136,11 +136,7 @@ class StackedClassifier(BaseStaticEnsemble):
         return self.meta_classifier_.predict_proba(X_meta)
 
     def _connect_input(self, X, base_preds):
-        if self.passthrough:
-            X_meta = np.hstack((base_preds, X))
-        else:
-            X_meta = base_preds
-        return X_meta
+        return np.hstack((base_preds, X)) if self.passthrough else base_preds
 
     def _predict_proba_base(self, X):
         """ Get the predictions (probabilities) of each base classifier in the

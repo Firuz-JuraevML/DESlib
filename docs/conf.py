@@ -328,5 +328,5 @@ def linkcode_resolve(domain, info):
         filename = 'deslib/%s#L%d-L%d' % find_source()
     except Exception:
         filename = info['module'].replace('.', '/') + '.py'
-    tag = 'master' if 'dev' in release else ('v' + release)
-    return "https://github.com/scikit-learn-contrib/DESlib/blob/%s/%s" % (tag, filename)
+    tag = 'master' if 'dev' in release else f'v{release}'
+    return f"https://github.com/scikit-learn-contrib/DESlib/blob/{tag}/{filename}"

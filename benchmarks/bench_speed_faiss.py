@@ -26,11 +26,11 @@ def run_knorae(pool_classifiers, X_DSEL, y_DSEL, X_test, y_test, knn_type):
 
 
 def fetch_HIGGS():
-    url = "https://archive.ics.uci.edu/ml/machine-learning-databases/" \
-          "00280/HIGGS.csv.gz"
     if not os.path.exists("../../HIGGS.csv"):
 
-        print("Downloading HIGGS dataset from {}".format(url))
+        url = "https://archive.ics.uci.edu/ml/machine-learning-databases/" \
+              "00280/HIGGS.csv.gz"
+        print(f"Downloading HIGGS dataset from {url}")
 
         if not os.path.exists("../../HIGGS.gz"):
             filedata = urllib.request.urlopen(url)
@@ -79,8 +79,9 @@ if __name__ == "__main__":
     num_of_test_inputs = [100, 1000, 10000]
 
     for n_t in num_of_test_inputs:
-        print("running experiment: num_of_DSEL_samples: {}, "
-              "num_of_tests: {}".format(y_DSEL.size, n_t))
+        print(
+            f"running experiment: num_of_DSEL_samples: {y_DSEL.size}, num_of_tests: {n_t}"
+        )
 
         score_sklearn, time_sklearn = run_knorae(pool_classifiers,
                                                  X_DSEL[:n_samples],
@@ -89,8 +90,7 @@ if __name__ == "__main__":
                                                  y_test[:n_t],
                                                  knn_type='knn')
 
-        print("sklearn_knorae score = {}, time = {}".format(score_sklearn,
-                                                            time_sklearn))
+        print(f"sklearn_knorae score = {score_sklearn}, time = {time_sklearn}")
 
         score_faiss, time_faiss = run_knorae(pool_classifiers,
                                              X_DSEL[:n_samples],
@@ -99,5 +99,4 @@ if __name__ == "__main__":
                                              y_test[:n_t],
                                              knn_type='faiss')
 
-        print("faiss_knorae score = {}, time = {}".format(score_faiss,
-                                                          time_faiss))
+        print(f"faiss_knorae score = {score_faiss}, time = {time_faiss}")

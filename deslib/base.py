@@ -255,18 +255,16 @@ class BaseDS(BaseEstimator, ClassifierMixin):
         # Check if base classifiers are not using LabelEncoder (the case for
         # scikit-learn's ensembles):
         if isinstance(self.pool_classifiers_, BaseEnsemble):
-            if np.array_equal(self.pool_classifiers_.classes_,
-                              self.pool_classifiers_[0].classes_):
-                self.base_already_encoded_ = False
-            else:
-                self.base_already_encoded_ = True
+            self.base_already_encoded_ = not np.array_equal(
+                self.pool_classifiers_.classes_, self.pool_classifiers_[0].classes_
+            )
         else:
             self.base_already_encoded_ = False
 
     def _compute_highest_possible_IH(self):
-        highest_IH = (self.safe_k - math.ceil(
-            self.safe_k / self.n_classes_)) / self.safe_k
-        return highest_IH
+        return (
+            self.safe_k - math.ceil(self.safe_k / self.n_classes_)
+        ) / self.safe_k
 
     def _validate_ih(self):
         highest_IH = self._compute_highest_possible_IH()
@@ -297,10 +295,7 @@ class BaseDS(BaseEstimator, ClassifierMixin):
         self.classes_ = self.enc_.classes_
 
     def _encode_base_labels(self, y):
-        if self.base_already_encoded_:
-            return y
-        else:
-            return self.enc_.transform(y)
+        return y if self.base_already_encoded_ else self.enc_.transform(y)
 
     def _fit_region_competence(self, X, y):
         """Fit the k-NN classifier inside the dynamic selection method.
@@ -765,31 +760,30 @@ class BaseDS(BaseEstimator, ClassifierMixin):
             if not isinstance(self.k, int):
                 raise TypeError("parameter k should be an integer")
             if self.k <= 1:
-                raise ValueError("parameter k must be higher than 1."
-                                 "input k is {} ".format(self.k))
+                raise ValueError(f"parameter k must be higher than 1.input k is {self.k} ")
 
         if self.safe_k is not None:
             if not isinstance(self.safe_k, int):
                 raise TypeError("parameter safe_k should be an integer")
             if self.safe_k <= 1:
-                raise ValueError("parameter safe_k must be higher than 1."
-                                 "input safe_k is {} ".format(self.safe_k))
+                raise ValueError(
+                    f"parameter safe_k must be higher than 1.input safe_k is {self.safe_k} "
+                )
 
         # safe_k should be equals or lower the neighborhood size k.
-        if self.safe_k is not None and self.k is not None:
-            if self.safe_k > self.k:
-                raise ValueError(
-                    "parameter safe_k must be equal or less than parameter k."
-                    "input safe_k is {} and k is {}".format(self.k,
-                                                            self.safe_k))
+        if self.safe_k is not None and self.k is not None and self.safe_k > self.k:
+            raise ValueError(
+                f"parameter safe_k must be equal or less than parameter k.input safe_k is {self.k} and k is {self.safe_k}"
+            )
 
         if not isinstance(self.IH_rate, float):
             raise TypeError(
                 "parameter IH_rate should be a float between [0.0, 0.5]")
 
         if self.IH_rate < 0 or self.IH_rate > 0.5:
-            raise ValueError("Parameter IH_rate should be between [0.0, 0.5]."
-                             "IH_rate = {}".format(self.IH_rate))
+            raise ValueError(
+                f"Parameter IH_rate should be between [0.0, 0.5].IH_rate = {self.IH_rate}"
+            )
 
         self._validate_pool()
 
@@ -803,8 +797,9 @@ class BaseDS(BaseEstimator, ClassifierMixin):
             If the pool of classifiers is empty.
         """
         if self.n_classifiers_ <= 0:
-            raise ValueError("n_classifiers must be greater than zero, "
-                             "got {}.".format(self.n_classifiers_))
+            raise ValueError(
+                f"n_classifiers must be greater than zero, got {self.n_classifiers_}."
+            )
 
     def _check_num_features(self, X):
         """ Verify if the number of features (n_features) of X is equals to
@@ -823,11 +818,9 @@ class BaseDS(BaseEstimator, ClassifierMixin):
         """
         n_features = X.shape[1]
         if self.n_features_ != n_features:
-            raise ValueError("Number of features of the model must "
-                             "match the input. Model n_features_ is {} and "
-                             "input n_features_ is {} ".format(
-                self.n_features_,
-                n_features))
+            raise ValueError(
+                f"Number of features of the model must match the input. Model n_features_ is {self.n_features_} and input n_features_ is {n_features} "
+            )
 
     def _check_predict_proba(self):
         """ Checks if each base classifier in the pool implements the

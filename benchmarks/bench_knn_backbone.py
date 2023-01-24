@@ -25,7 +25,7 @@ list_search_time = []
 
 for n in n_samples:
 
-    print("Number of samples: {}" .format(n))
+    print(f"Number of samples: {n}")
     X, y = make_classification(n_samples=n,
                                n_features=20,
                                random_state=rng)
@@ -36,12 +36,12 @@ for n in n_samples:
         start = time.clock()
         knn.fit(X_train, y_train)
         fitting_time = time.clock() - start
-        print("{} fitting time: {}" .format(name, fitting_time))
+        print(f"{name} fitting time: {fitting_time}")
 
         start = time.clock()
         neighbors, dists = knn.kneighbors(X_test)
         search_time = time.clock() - start
-        print("{} neighborhood search time: {}" .format(name, search_time))
+        print(f"{name} neighborhood search time: {search_time}")
 
         temp_fitting_time.append(fitting_time)
         temp_search_time.append(search_time)

@@ -91,17 +91,14 @@ class StaticSelection(BaseStaticEnsemble):
 
         performances = np.zeros(self.n_classifiers_)
 
-        if not self.base_already_encoded_:
-            y_encoded = y
-        else:
-            y_encoded = self.enc_.transform(y)
-
+        y_encoded = self.enc_.transform(y) if self.base_already_encoded_ else y
         for clf_idx, clf in enumerate(self.pool_classifiers_):
             scorer = check_scoring(clf, self.scoring)
             performances[clf_idx] = scorer(clf, X, y_encoded)
 
         self.clf_indices_ = np.argsort(performances)[::-1][
-                            0:self.n_classifiers_ensemble_]
+            : self.n_classifiers_ensemble_
+        ]
         self.ensemble_ = [self.pool_classifiers_[clf_idx] for clf_idx in
                           self.clf_indices_]
 
@@ -147,8 +144,7 @@ class StaticSelection(BaseStaticEnsemble):
          """
         self._check_is_fitted()
         self._check_predict_proba()
-        proba = predict_proba_ensemble(self.ensemble_, X)
-        return proba
+        return predict_proba_ensemble(self.ensemble_, X)
 
     def _validate_parameters(self):
 

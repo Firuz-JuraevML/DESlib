@@ -58,9 +58,7 @@ def hardness_region_competence(neighbors_idx, labels, safe_k):
 
     neighbors_y = labels[neighbors_idx[:, :safe_k]]
     _, num_majority_class = mode(neighbors_y, axis=1)
-    hardness = ((safe_k - num_majority_class) / safe_k).reshape(-1, )
-
-    return hardness
+    return ((safe_k - num_majority_class) / safe_k).reshape(-1, )
 
 
 def kdn_score(X, y, k):

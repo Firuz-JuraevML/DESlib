@@ -43,7 +43,7 @@ def test_weights_zero():
 
 
 def test_fit(example_estimate_competence, create_pool_classifiers):
-    X, y = example_estimate_competence[0:2]
+    X, y = example_estimate_competence[:2]
 
     knop_test = KNOP(create_pool_classifiers)
     knop_test.fit(X, y)

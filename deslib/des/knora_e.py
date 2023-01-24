@@ -207,9 +207,4 @@ class KNORAE(BaseDES):
         # (i.e., the maximum number of consecutive predictions)
         max_value = np.max(competences, axis=1)
 
-        # Select all base classifiers with the maximum number of
-        #  consecutive correct predictions for each sample.
-        selected_classifiers = (
-                    competences == max_value.reshape(competences.shape[0], -1))
-
-        return selected_classifiers
+        return competences == max_value.reshape(competences.shape[0], -1)

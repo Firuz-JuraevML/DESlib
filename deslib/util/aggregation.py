@@ -42,9 +42,7 @@ def majority_voting(classifier_ensemble, X):
         The label of each query sample predicted using the majority voting rule
     """
     votes = _get_ensemble_votes(classifier_ensemble, X)
-    predicted_label = majority_voting_rule(votes)
-
-    return predicted_label
+    return majority_voting_rule(votes)
 
 
 def weighted_majority_voting(classifier_ensemble, weights, X):
@@ -70,8 +68,7 @@ def weighted_majority_voting(classifier_ensemble, weights, X):
         The label of each query sample predicted using the majority voting rule
     """
     votes = _get_ensemble_votes(classifier_ensemble, X)
-    predicted_label = weighted_majority_voting_rule(votes, weights)
-    return predicted_label
+    return weighted_majority_voting_rule(votes, weights)
 
 
 def _get_ensemble_votes(classifier_ensemble, X):
@@ -145,9 +142,8 @@ def weighted_majority_voting_rule(votes, weights, labels_set=None):
     """
     if weights.shape != votes.shape:
         raise ValueError(
-            'The shape of the arrays votes and weights should be the '
-            'same. weights = {} '
-            'while votes = {}'.format(weights.shape, votes.shape))
+            f'The shape of the arrays votes and weights should be the same. weights = {weights.shape} while votes = {votes.shape}'
+        )
     if labels_set is None:
         labels_set = np.unique(votes.astype(np.int))
 
@@ -158,8 +154,7 @@ def weighted_majority_voting_rule(votes, weights, labels_set=None):
         ma_weights.mask = votes != label
         w_votes[ind, :] = ma_weights.sum(axis=1)
 
-    predicted_label = labels_set[np.argmax(w_votes, axis=0)]
-    return predicted_label
+    return labels_set[np.argmax(w_votes, axis=0)]
 
 
 def _get_ensemble_probabilities(classifier_ensemble, X):
@@ -179,10 +174,7 @@ def _get_ensemble_probabilities(classifier_ensemble, X):
         Probabilities predicted by each base classifier in the ensemble for all
         samples in X.
     """
-    list_proba = []
-    for clf in classifier_ensemble:
-        list_proba.append(clf.predict_proba(X))
-
+    list_proba = [clf.predict_proba(X) for clf in classifier_ensemble]
     # transpose the array to have the
     # shape = [n_samples, n_classifiers, n_classes]
     return np.array(list_proba).transpose((1, 0, 2))
@@ -207,8 +199,7 @@ def predict_proba_ensemble(classifier_ensemble, X):
     """
     ensemble_proba = _get_ensemble_probabilities(classifier_ensemble, X)
     n_classifiers = ensemble_proba.shape[1]
-    predicted_proba = np.sum(ensemble_proba, axis=1) / n_classifiers
-    return predicted_proba
+    return np.sum(ensemble_proba, axis=1) / n_classifiers
 
 
 def aggregate_proba_ensemble_weighted(ensemble_proba, weights):
@@ -424,6 +415,5 @@ def _check_predictions(predictions):
     """
     if predictions.ndim != 3:
         raise ValueError(
-            'predictions must contain 3 dimensions: '
-            '[n_samples, n_classifiers, n_classes]. Currently'
-            'predictions has {} dimensions'.format(predictions.ndim))
+            f'predictions must contain 3 dimensions: [n_samples, n_classifiers, n_classes]. Currentlypredictions has {predictions.ndim} dimensions'
+        )

@@ -55,7 +55,7 @@ def create_X_y():
 # ----- Test Example all ones ------
 @pytest.fixture
 def example_all_ones(example_estimate_competence):
-    X, y, neighbors = example_estimate_competence[0:3]
+    X, y, neighbors = example_estimate_competence[:3]
     dsel_processed = np.ones((15, 3))
     dsel_scores = np.ones((15, 3, 2))
     distances = np.ones((3, 7))
@@ -111,17 +111,17 @@ def example_kuncheva():
 
     k = 15
     n_classes = 3
-    dict_return = {"dsel_processed": dsel_processed,
-                   "dsel_scores": dsel_scores,
-                   "distances": distances,
-                   "neighbors": neighbors,
-                   "classifier_pred": classifier_pred,
-                   "y_dependent": y_dependent,
-                   "y_independent": y_independent,
-                   "n_classes": n_classes,
-                   "k": k}
-
-    return dict_return
+    return {
+        "dsel_processed": dsel_processed,
+        "dsel_scores": dsel_scores,
+        "distances": distances,
+        "neighbors": neighbors,
+        "classifier_pred": classifier_pred,
+        "y_dependent": y_dependent,
+        "y_independent": y_independent,
+        "n_classes": n_classes,
+        "k": k,
+    }
 
 
 # ----- Routines to generate a pool of classifiers using MagicMock  ------
@@ -140,8 +140,7 @@ def create_pool_classifiers():
                                    return_prob=np.atleast_2d([1.0, 0.0]))
     clf_2 = create_base_classifier(return_value=np.zeros(1),
                                    return_prob=np.atleast_2d([0.33, 0.67]))
-    pool_classifiers = [clf_0, clf_1, clf_2]
-    return pool_classifiers
+    return [clf_0, clf_1, clf_2]
 
 
 @pytest.fixture

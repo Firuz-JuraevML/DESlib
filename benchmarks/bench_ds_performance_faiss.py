@@ -16,8 +16,8 @@ def sk_KNORAE_knn(XTrain, YTrain, k, XTest, YTest):
     knorae_sk = KNORAE(k=k, knn_classifier='knn')
     knorae_sk.fit(XTrain, YTrain)
     score = knorae_sk.score(XTest, YTest)
-    print("sklearn_knn_knorae run_time: {}".format(time.clock() - start))
-    print("sklearn_knn_knorae score: {}".format(score))
+    print(f"sklearn_knn_knorae run_time: {time.clock() - start}")
+    print(f"sklearn_knn_knorae score: {score}")
 
 
 def faiss_KNORAE_knn(XTrain, YTrain, k, XTest, YTest):
@@ -25,15 +25,15 @@ def faiss_KNORAE_knn(XTrain, YTrain, k, XTest, YTest):
     knorae_sk = KNORAE(k=k, knn_classifier='faiss')
     knorae_sk.fit(XTrain, YTrain)
     score = knorae_sk.score(XTest, YTest)
-    print("faiss_knn_knorae run_time: {}".format(time.clock() - start))
-    print("faiss_knn_knorae score: {}".format(score))
+    print(f"faiss_knn_knorae run_time: {time.clock() - start}")
+    print(f"faiss_knn_knorae score: {score}")
 
 
 if __name__ == "__main__":
     url = "https://archive.ics.uci.edu/ml/machine-learning-databases/" \
           "00280/HIGGS.csv.gz"
     if not os.path.exists("../../HIGGS.csv"):
-        print("Downloading HIGGS dataset from {}".format(url))
+        print(f"Downloading HIGGS dataset from {url}")
         if not os.path.exists("../../HIGGS.gz"):
             filedata = urllib.request.urlopen(url)
             data2write = filedata.read()
@@ -60,9 +60,9 @@ if __name__ == "__main__":
     for nsamples in num_samples_list:
         for n_k in num_of_k_list:
             for n_t in num_of_test_inputs:
-                print("running experiment: num_of_train_samples: {}, "
-                      "num_of_k: {}, num_of_tests: {}".format(nsamples, n_k,
-                                                              n_t))
+                print(
+                    f"running experiment: num_of_train_samples: {nsamples}, num_of_k: {n_k}, num_of_tests: {n_t}"
+                )
                 faiss_KNORAE_knn(X_train[:nsamples], Y_train[:nsamples], n_k,
                                  X_test[:n_t], Y_test[:n_t])
                 t = threading.Thread(target=sk_KNORAE_knn, args=(
@@ -73,7 +73,5 @@ if __name__ == "__main__":
                 t.join(timeout=600)
                 if t.is_alive():
                     print(
-                        "sklearn_knn, num_of_train_samples: {}, num_of_k: {}, "
-                        "num_of_tests: {}, run_time: timeout".format(nsamples,
-                                                                     n_k,
-                                                                     n_t))
+                        f"sklearn_knn, num_of_train_samples: {nsamples}, num_of_k: {n_k}, num_of_tests: {n_t}, run_time: timeout"
+                    )

@@ -161,5 +161,5 @@ plt.tight_layout()
 # Bagging on the test set:
 
 for ds, name in zip(list_ds, names):
-    print('Accuracy ' + name + ': ' + str(ds.score(X_test, y_test)))
-print('Accuracy Bagging: ' + str(pool_classifiers.score(X_test, y_test)))
+    print(f'Accuracy {name}: {str(ds.score(X_test, y_test))}')
+print(f'Accuracy Bagging: {str(pool_classifiers.score(X_test, y_test))}')

@@ -74,11 +74,7 @@ class SingleBest(BaseStaticEnsemble):
 
         super(SingleBest, self).fit(X, y)
 
-        if not self.base_already_encoded_:
-            y_encoded = y
-        else:
-            y_encoded = self.enc_.transform(y)
-
+        y_encoded = self.enc_.transform(y) if self.base_already_encoded_ else y
         performances = self._estimate_performances(X, y_encoded)
         self.best_clf_index_ = np.argmax(performances)
         self.best_clf_ = self.pool_classifiers_[self.best_clf_index_]
@@ -133,8 +129,7 @@ class SingleBest(BaseStaticEnsemble):
             raise ValueError(
                 "Base classifier must support the predict_proba function.")
 
-        predicted_proba = self.best_clf_.predict_proba(X)
-        return predicted_proba
+        return self.best_clf_.predict_proba(X)
 
     def _check_is_fitted(self):
         """Verify if the estimator algorithm was fitted. Raises an error if it

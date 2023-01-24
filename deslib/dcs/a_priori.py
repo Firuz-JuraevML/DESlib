@@ -196,9 +196,6 @@ class APriori(BaseDCS):
         # of each corresponding neighbor
         scores_target_class *= np.expand_dims(dists_normalized, axis=2)
 
-        # Sum the scores obtained for each neighbor and divide by the sum of
-        # all distances
-        competences = np.sum(scores_target_class, axis=1) / np.sum(
-            dists_normalized, axis=1, keepdims=True)
-
-        return competences
+        return np.sum(scores_target_class, axis=1) / np.sum(
+            dists_normalized, axis=1, keepdims=True
+        )

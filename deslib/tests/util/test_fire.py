@@ -8,7 +8,7 @@ from ..conftest import create_base_classifier
 # Since no classifier crosses the region of competence,
 # all of them must be selected
 def test_frienemy_no_classifier_crosses(example_estimate_competence):
-    _, y, neighbors = example_estimate_competence[0:3]
+    _, y, neighbors = example_estimate_competence[:3]
     n_classifiers = 3
     predictions = np.zeros((y.size, n_classifiers))
     mask = frienemy_pruning_preprocessed(neighbors, y, predictions)

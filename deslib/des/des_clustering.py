@@ -201,14 +201,14 @@ class DESClustering(BaseDS):
             self.performance_cluster_[cluster_index, :] = score_classifier
 
             # Get the N_ most accurate classifiers in the cluster
-            performance_indices = np.argsort(score_classifier)[::-1][0:self.N_]
+            performance_indices = np.argsort(score_classifier)[::-1][:self.N_]
 
             # Get the target labels for the samples in the corresponding
             #  cluster for the diversity calculation.
 
             targets = self.DSEL_target_[sample_indices]
             self.diversity_cluster_[cluster_index, :] = \
-                compute_pairwise_diversity(targets,
+                    compute_pairwise_diversity(targets,
                                            self.BKS_DSEL_[sample_indices, :],
                                            self.diversity_func_)
 
@@ -216,11 +216,9 @@ class DESClustering(BaseDS):
                 cluster_index, performance_indices]
 
             if self.more_diverse:
-                diversity_indices = np.argsort(diversity_of_selected)[::-1][
-                    0:self.J_]
+                diversity_indices = np.argsort(diversity_of_selected)[::-1][:self.J_]
             else:
-                diversity_indices = np.argsort(diversity_of_selected)[
-                    0:self.J_]
+                diversity_indices = np.argsort(diversity_of_selected)[:self.J_]
 
             self.indices_[cluster_index, :] = performance_indices[
                 diversity_indices]
@@ -248,8 +246,7 @@ class DESClustering(BaseDS):
                       The competence level estimated for each base classifier.
         """
         cluster_index = self.clustering_.predict(query)
-        competences = self.performance_cluster_[cluster_index][:]
-        return competences
+        return self.performance_cluster_[cluster_index][:]
 
     def select(self, query):
         """Select an ensemble with the most accurate and most diverse
@@ -271,8 +268,7 @@ class DESClustering(BaseDS):
 
         """
         cluster_index = self.clustering_.predict(query)
-        selected_classifiers = self.indices_[cluster_index, :]
-        return selected_classifiers
+        return self.indices_[cluster_index, :]
 
     def classify_with_ds(self, query, predictions, probabilities=None,
                          neighbors=None, distances=None, DFP_mask=None):
@@ -313,17 +309,13 @@ class DESClustering(BaseDS):
 
         if query.shape[0] != predictions.shape[0]:
             raise ValueError(
-                'The arrays query and predictions must have the same number'
-                ' of samples. query.shape is {}'
-                'and predictions.shape is {}'.format(query.shape,
-                                                     predictions.shape))
+                f'The arrays query and predictions must have the same number of samples. query.shape is {query.shape}and predictions.shape is {predictions.shape}'
+            )
 
         selected_classifiers = self.select(query)
         votes = predictions[
             np.arange(predictions.shape[0])[:, None], selected_classifiers]
-        predicted_label = majority_voting_rule(votes)
-
-        return predicted_label
+        return majority_voting_rule(votes)
 
     def predict_proba_with_ds(self, query, predictions, probabilities,
                               neighbors=None, distances=None, DFP_mask=None):
@@ -357,18 +349,14 @@ class DESClustering(BaseDS):
         """
         if query.shape[0] != probabilities.shape[0]:
             raise ValueError(
-                'The arrays query and predictions must have the same number of'
-                ' samples. query.shape is {}'
-                'and predictions.shape is {}'.format(query.shape,
-                                                     predictions.shape))
+                f'The arrays query and predictions must have the same number of samples. query.shape is {query.shape}and predictions.shape is {predictions.shape}'
+            )
 
         selected_classifiers = self.select(query)
         ensemble_proba = probabilities[
             np.arange(probabilities.shape[0])[:, None],
             selected_classifiers, :]
-        predicted_proba = np.mean(ensemble_proba, axis=1)
-
-        return predicted_proba
+        return np.mean(ensemble_proba, axis=1)
 
     def _check_parameters(self):
         """Check if the parameters passed as argument are correct.
@@ -390,18 +378,20 @@ class DESClustering(BaseDS):
                 "Parameter metric_performance must be a sklearn metrics")
 
         if self.N_ <= 0 or self.J_ <= 0:
-            raise ValueError("The values of N_ and J_ should be higher than 0"
-                             "N_ = {}, J_= {} ".format(self.N_, self.J_))
+            raise ValueError(
+                f"The values of N_ and J_ should be higher than 0N_ = {self.N_}, J_= {self.J_} "
+            )
         if self.N_ < self.J_:
             raise ValueError(
-                "The value of N_ should be greater or equals than J_"
-                "N_ = {}, J_= {} ".format(self.N_, self.J_))
+                f"The value of N_ should be greater or equals than J_N_ = {self.N_}, J_= {self.J_} "
+            )
 
-        if self.clustering is not None:
-            if not isinstance(self.clustering, ClusterMixin):
-                raise ValueError(
-                    "Parameter clustering must be a sklearn"
-                    " cluster estimator.")
+        if self.clustering is not None and not isinstance(
+            self.clustering, ClusterMixin
+        ):
+            raise ValueError(
+                "Parameter clustering must be a sklearn"
+                " cluster estimator.")
 
     def get_scores_(self, sample_indices):
 

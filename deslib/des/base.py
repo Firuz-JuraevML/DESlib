@@ -172,10 +172,8 @@ class BaseDES(BaseDS):
 
         if query.shape[0] != predictions.shape[0]:
             raise ValueError(
-                'The arrays query and predictions must have the same number'
-                ' of samples. query.shape is {}'
-                'and predictions.shape is {}'.format(query.shape,
-                                                     predictions.shape))
+                f'The arrays query and predictions must have the same number of samples. query.shape is {query.shape}and predictions.shape is {predictions.shape}'
+            )
 
         if self.needs_proba:
             competences = self.estimate_competence_from_proba(
@@ -197,23 +195,19 @@ class BaseDES(BaseDS):
             # the predictions of certain base classifiers.
             selected_classifiers = self.select(competences)
             votes = np.ma.MaskedArray(predictions, ~selected_classifiers)
-            predicted_label = majority_voting_rule(votes)
+            return majority_voting_rule(votes)
 
         elif self.mode == "weighting":
             votes = np.atleast_2d(predictions)
-            predicted_label = weighted_majority_voting_rule(votes, competences,
-                                                            np.arange(
-                                                                self.n_classes_
-                                                                      ))
+            return weighted_majority_voting_rule(
+                votes, competences, np.arange(self.n_classes_)
+            )
         else:
             selected_classifiers = self.select(competences)
             votes = np.ma.MaskedArray(predictions, ~selected_classifiers)
-            predicted_label = weighted_majority_voting_rule(votes, competences,
-                                                            np.arange(
-                                                                self.n_classes_
-                                                                      ))
-
-        return predicted_label
+            return weighted_majority_voting_rule(
+                votes, competences, np.arange(self.n_classes_)
+            )
 
     def predict_proba_with_ds(self, query, predictions, probabilities,
                               neighbors=None, distances=None, DFP_mask=None):
@@ -261,10 +255,8 @@ class BaseDES(BaseDS):
 
         if query.shape[0] != probabilities.shape[0]:
             raise ValueError(
-                'The arrays query and predictions must have the same number'
-                ' of samples. query.shape is {}'
-                'and predictions.shape is {}'.format(query.shape,
-                                                     predictions.shape))
+                f'The arrays query and predictions must have the same number of samples. query.shape is {query.shape}and predictions.shape is {predictions.shape}'
+            )
 
         if self.needs_proba:
             competences = self.estimate_competence_from_proba(
@@ -292,11 +284,10 @@ class BaseDES(BaseDS):
             masked_proba = np.ma.MaskedArray(probabilities,
                                              ~selected_classifiers)
 
-            predicted_proba = np.mean(masked_proba, axis=1)
+            return np.mean(masked_proba, axis=1)
 
         elif self.mode == "weighting":
-            predicted_proba = aggregate_proba_ensemble_weighted(probabilities,
-                                                                competences)
+            return aggregate_proba_ensemble_weighted(probabilities, competences)
         else:
             selected_classifiers = self.select(competences)
 
@@ -308,10 +299,7 @@ class BaseDES(BaseDS):
             masked_proba = np.ma.MaskedArray(probabilities,
                                              ~selected_classifiers)
 
-            predicted_proba = aggregate_proba_ensemble_weighted(masked_proba,
-                                                                competences)
-
-        return predicted_proba
+            return aggregate_proba_ensemble_weighted(masked_proba, competences)
 
     def _validate_parameters(self):
 
@@ -319,8 +307,8 @@ class BaseDES(BaseDS):
 
         if not isinstance(self.mode, str):
             raise TypeError(
-                'Parameter "mode" should be a string.'
-                ' Currently "mode" = {}' .format(type(self.mode)))
+                f'Parameter "mode" should be a string. Currently "mode" = {type(self.mode)}'
+            )
 
         if self.mode not in ['selection', 'hybrid', 'weighting']:
             raise ValueError(

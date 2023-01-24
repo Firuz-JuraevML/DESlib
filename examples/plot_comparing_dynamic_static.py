@@ -53,6 +53,7 @@ vol. 41, pp. 195 – 216, 2018.
     (2002): 281-286.
 """
 
+
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 from matplotlib.cm import get_cmap
@@ -127,8 +128,7 @@ scores = []
 for method, name in zip(methods, names):
     method.fit(X_dsel, y_dsel)
     scores.append(method.score(X_test, y_test))
-    print("Classification accuracy {} = {}"
-          .format(name, method.score(X_test, y_test)))
+    print(f"Classification accuracy {name} = {method.score(X_test, y_test)}")
 
 
 ###############################################################################
@@ -166,4 +166,4 @@ plt.show()
 # to 100%, which is an almost 15% gap to the best performing method.
 
 oracle = Oracle(pool_classifiers).fit(X_train, y_train)
-print('Oracle result: {}' .format(oracle.score(X_test, y_test)))
+print(f'Oracle result: {oracle.score(X_test, y_test)}')
